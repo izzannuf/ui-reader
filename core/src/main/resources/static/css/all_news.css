@@ -1,0 +1,134 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@300&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Newsreader:wght@500&display=swap');
+body{
+    background-color: white;
+    font-family: 'Lato', sans-serif;
+}
+nav {
+    padding: 20px;
+    width: 100%;
+    height : 55px;
+    background-color: white;
+    justify-content: space-between;
+}
+.search {
+    width: 300px;
+    height: 40px;
+    background-color: rgba(245,245,245,0.8);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 20px;
+    padding: 0px 20px;
+    margin-top: -10px;
+}
+.search input {
+    width: 100%;
+    height: 30px;
+    border: none;
+    outline: none;
+    background-color: transparent;
+}
+.search i {
+    color: #3a3a3a;
+}
+.logo {
+    float:left;
+    margin-top: -10px;
+    justify-content: space-between;
+}
+.head {
+    padding-left: 20px;
+    padding-right:20px;
+    text-decoration: none;
+    color: black;
+}
+.menu {
+    margin-top: -35px;
+    float: right;
+}
+.link {
+    padding-left: 20px;
+    padding-right:20px;
+    text-decoration: none;
+    color: black;
+}
+.logout{
+    background-color: darkred;
+    color: white;
+}
+.news-heading {
+    display: flex;
+    margin: 0px 2%;
+}
+.all-news{
+    margin-top: 30px;
+}
+.news-box {
+    width: 250px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: column;
+    box-shadow:  2px 2px 30px rgba(0,0,0,0.2);
+    margin: 20px;
+    border-radius: 5px;
+    overflow: hidden;
+    border-top: 3px solid #292929;
+}
+.news-img {
+    width: 100%;
+    height: 250px;
+    position: relative;
+}
+.news-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+
+}
+.news-text {
+    text-align: center;
+    display: block;
+    font-weight: 600;
+    display: -webkit-box;
+    max-width: 80%;
+    -webkit-line-clamp: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #3a3a3a;
+    margin: 20px;
+    height : 100px;
+}
+.news-box:hover {
+    transform: translateY(-10px);
+    transition: all ease 0.256s;
+}
+#news-list {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+
+}
+.error{
+    margin-top: 30px;
+}
+footer {
+    border-top : solid rgb(58, 57, 57);;
+    justify-content: space-between;
+    width: 90%;
+    height : 60px;
+    margin: auto;
+    margin-top: 100px;
+}
+.footer-left {
+    float: left;
+    margin-top: 10px;
+    margin-left : 30px;
+}
+.footer-right {
+    float: right;
+    margin-top: 10px;
+    margin-right: 30px;
+}

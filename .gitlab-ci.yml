@@ -1,0 +1,155 @@
+image: gradle:7.4-jdk11-alpine
+
+variables:
+  GRADLE_OPTS: '-Dorg.gradle.daemon=false'
+
+before_script:
+  - echo $PWD
+  - export GRADLE_USER_HOME=`pwd`/.gradle
+
+stages:
+  - core-checkstyle
+  - sonarqube-check
+  - test
+  - email-blaster-deploy
+  - core-deploy
+  - api-fetcher-deploy
+
+email-blaster-sonarqube-check:
+  stage: sonarqube-check
+  only:
+    - merge_requests
+    - master
+  variables:
+    GIT_DEPTH: 0
+  script:
+    - cd "./microservices/email-blaster"
+    - gradle sonarqube -Dsonar.qualitygate.wait=true
+  allow_failure: true
+
+email-blaster-deploy:
+  stage: email-blaster-deploy
+  image: ruby:latest
+  only:
+    - development
+    - master
+  before_script:
+    - cd "./microservices/email-blaster"
+    - gem install dpl
+    - wget -qO- https://cli-assets.heroku.com/install-ubuntu.sh | sh
+  script:
+    - dpl --provider=heroku --app=$HEROKU_EMAIL_BLASTER_APP_NAME --api-key=$HEROKU_API_KEY
+    - export HEROKU_API_KEY=$HEROKU_API_KEY
+    - heroku run --app $HEROKU_EMAIL_BLASTER_APP_NAME migrate
+
+
+core-checkstyle:
+  stage: core-checkstyle
+  only:
+    - merge_requests
+    - master
+  script:
+    - cd core
+    - wget https://github.com/checkstyle/checkstyle/releases/download/checkstyle-10.1/checkstyle-10.1-all.jar
+    - java -jar checkstyle-10.1-all.jar -c="./config/checkstyle/checkstyle.xml" src/main/java
+  allow_failure: true
+
+core-sonarqube-check:
+  stage: sonarqube-check
+  only:
+    - merge_requests
+    - master
+  variables:
+    GIT_DEPTH: 0
+  script:
+    - cd core
+    - gradle sonarqube -Dsonar.qualitygate.wait=true
+  allow_failure: true
+
+core-deploy:
+  stage: core-deploy
+  image: ruby:latest
+  only:
+    - development
+    - master
+  before_script:
+    - cd core
+    - gem install dpl
+    - wget -qO- https://cli-assets.heroku.com/install-ubuntu.sh | sh
+  script:
+    - dpl --provider=heroku --app=$HEROKU_CORE_APP_NAME --api-key=$HEROKU_API_KEY
+    - export HEROKU_API_KEY=$HEROKU_API_KEY
+    - heroku run --app $HEROKU_CORE_APP_NAME migrate
+
+api-fetcher-sonarqube-check:
+  stage: sonarqube-check
+  only:
+    - merge_requests
+    - master
+  variables:
+    GIT_DEPTH: 0
+  script:
+    - cd "./microservices/api_fetcher"
+    - gradle sonarqube -Dsonar.qualitygate.wait=true
+  allow_failure: true
+
+api-fetcher-deploy:
+  stage: api-fetcher-deploy
+  image: ruby:latest
+  only:
+    - development
+    - master
+  before_script:
+    - cd "./microservices/api_fetcher"
+    - gem install dpl
+    - wget -qO- https://cli-assets.heroku.com/install-ubuntu.sh | sh
+  script:
+    - dpl --provider=heroku --app=$HEROKU_API_FETCHER_APP_NAME --api-key=$HEROKU_API_KEY
+    - export HEROKU_API_KEY=$HEROKU_API_KEY
+    - heroku run --app $HEROKU_API_FETCHER_APP_NAME migrate
+
+core-test:
+ stage: test
+ before_script:
+   - cd core
+ script:
+   - export SPRING_PROFILES_ACTIVE=test
+   - gradle check --stacktrace
+   - cat core/build/reports/jacoco/test/html/index.html | grep -o '<tfoot>.*</tfoot>'
+   - awk -F"," '{ instructions += $4 + $5; covered += $5 } END { print covered, "/", instructions, " instructions covered"; print 100*covered/instructions, "% covered" }' $JACOCO_CSV_LOCATION
+ artifacts:
+   paths:
+     - core/build/reports/jacoco/*
+   expire_in: 1 day
+ allow_failure: true
+
+
+email-blaster-test:
+ stage: test
+ before_script:
+   - cd "./microservices/email-blaster"
+ script:
+   - export SPRING_PROFILES_ACTIVE=test
+   - gradle check --stacktrace
+   - cat microservices/email-blaster/build/reports/jacoco/test/html/index.html | grep -o '<tfoot>.*</tfoot>'
+   - awk -F"," '{ instructions += $4 + $5; covered += $5 } END { print covered, "/", instructions, " instructions covered"; print 100*covered/instructions, "% covered" }' $JACOCO_CSV_LOCATION
+ artifacts:
+   paths:
+     - microservices/email-blaster/build/reports/jacoco/*
+   expire_in: 1 day
+ allow_failure: true
+
+api-fetcher-test:
+ stage: test
+ before_script:
+   - cd "./microservices/api_fetcher"
+ script:
+   - export SPRING_PROFILES_ACTIVE=test
+   - gradle check --stacktrace
+   - cat microservices/api_fetcher/build/reports/jacoco/test/html/index.html | grep -o '<tfoot>.*</tfoot>'
+   - awk -F"," '{ instructions += $4 + $5; covered += $5 } END { print covered, "/", instructions, " instructions covered"; print 100*covered/instructions, "% covered" }' $JACOCO_CSV_LOCATION
+ artifacts:
+   paths:
+     - microservices/api_fetcher/build/reports/jacoco/*
+   expire_in: 1 day
+ allow_failure: true

@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>UI Reader</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" th:href="@{../css/homepages.css}" type="text/css">
+    <link rel="stylesheet" th:href="@{../files/lightslider.css}">
+    <script th:src="@{../files/JQuery3.3.1.js}"></script>
+    <script th:src="@{../files/lightslider.js}"></script>
+</head>
+<body>
+<nav>
+    <div style="display: flex; flex-direction: row; align-items: center; gap: 5px;">
+        <div class="logo">
+            <b>
+                <h3 class="head">UI Reader
+                    <span th:if="${#request.userPrincipal.principal.firstName}">
+                    <small>   welcome, <b>[[${#request.userPrincipal.principal.firstName}]]</b></small>
+                </span>
+                </h3>
+            </b>
+        </div>
+        <form class="search" th:action="@{/}">
+            <input class="cari" type="text" name="keyword" id="keyword" size="50" th:value="${keyword}" placeholder="Search the news..." required />
+            <input type="submit" value="Search" />
+        </form>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#searchMoreModal" style="display: inline-block">
+            Search More
+        </button>
+    </div>
+
+
+        <!-- Modal -->
+        <div class="modal fade" id="searchMoreModal" tabindex="-1" aria-labelledby="searchMoreModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Search more</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form th:action="@{/}">
+                            <label for="keywordModal">Keyword(s):</label>
+                            <input type="text" name="keyword" id="keywordModal" size="50" th:value="${keyword}" placeholder="Search the news..."/><br>
+                            <label for="keywordModal">Category:</label>
+                            <input type="text" name="category" id="category" size="50" th:value="${category}" placeholder="Search by category..."/><br>
+                            <label for="startDate">Start Date:</label>
+                            <input type="date" name="startDate" id="startDate" th:value="${startDate}"><br>
+                            <label for="endDate">End Date:</label>
+                            <input type="date" name="endDate" id="endDate" th:value="${endDate}"><br>
+                            <input type="submit" value="Search" />
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <div class="menu">
+        <a class="link" href="/">HOME</a>
+        <a class="link" href="/all-news">NEWS</a>
+        <a class="link" href="/bookmarks/all-bookmarks">BOOKMARK</a>
+        <a class="link" th:href="@{/logout}">LOGOUT</a>
+    </div>
+</nav>
+<main>
+    <div th:switch="${isThereAnyNews}">
+        <div th:case="'home'">
+            <div class="quote">
+                <h3 class="title-content">“The newspaper is a greater treasure to the people than uncounted millions of gold.”</h3>
+                <h6 class="title-content title second">~ Henry Ward Beecher</h6>
+            </div>
+            <h2 class="latest-heading1">POPULAR NEWS</h2>
+            <div class="news" th:if="${popularNews} != null">
+                <div class="new news1">
+                    <a th:href="'/read/'+${popularNews.get(0).getId()}">
+                    <div class="images1">
+                        <img class="img1" th:src="${popularNews.get(0).getImageUrl()}">
+                    </div>
+                    <div class="title title1">
+                        <h5 th:text="${popularNews.get(0).getTitle()}"></h5>
+                    </div>
+                    </a>
+                </div>
+                <div class="new news2">
+                    <a th:href="'/read/'+${popularNews.get(1).getId()}">
+                    <div class="images">
+                        <img class="img" th:src="${popularNews.get(1).getImageUrl()}">
+                    </div>
+                    <div class="title">
+                        <h5 th:text="${popularNews.get(1).getTitle()}" th:name="title"></h5>
+                    </div>
+                    </a>
+                </div>
+                <div class="new news3">
+                    <a th:href="'/read/'+${popularNews.get(2).getId()}">
+                    <div class="images">
+                        <img class="img" th:src="${popularNews.get(2).getImageUrl()}">
+                    </div>
+                    <div class="title">
+                        <h5 th:text="${popularNews.get(2).getTitle()}" th:name="title"></h5>
+                    </div>
+                    </a>
+                </div>
+                <div class="new news4">
+                    <a th:href="'/read/'+${popularNews.get(3).getId()}">
+                    <div class="images">
+                        <img class="img" th:src="${popularNews.get(3).getImageUrl()}" >
+                    </div>
+                    <div class="title">
+                        <h5 th:text="${popularNews.get(3).getTitle()}" th:name="title"></h5>
+                    </div>
+                    </a>
+                </div>
+                <div class="new news5">
+                    <a th:href="'/read/'+${popularNews.get(4).getId()}">
+                    <div class="images">
+                        <img class="img" th:src="${popularNews.get(4).getImageUrl()}">
+                    </div>
+                    <div class="title">
+                        <h5 th:text="${popularNews.get(4).getTitle()}" th:name="title"></h5>
+                    </div>
+                    </a>
+                </div>
+            </div>
+            <section id="latest">
+                <h2 class="latest-heading">LATEST NEWS</h2>
+                <ul id="autoWidth2" class="cs-hidden" th:if="${latestNews != null}">
+                    <li class="item-a">
+                        <div class="latest-box">
+                            <a th:href="'/read/'+${latestNews.get(0).getId()}">
+                            <a class="latest-b-img" th:href="'/read/'+${latestNews.get(0).getId()}">
+                                <img th:src="${latestNews.get(0).getImageUrl()}" >
+                            </a>
+                            <div class="latest-b-text">
+                                <strong th:name="title" th:text="${latestNews.get(0).getTitle()}"></strong>
+                            </div>
+                            </a>
+                        </div>
+                    </li>
+                    <li class="item-b">
+                        <div class="latest-box">
+                            <a th:href="'/read/'+${latestNews.get(1).getId()}">
+                            <a class="latest-b-img" th:href="'/read/'+${latestNews.get(1).getId()}">
+                                <img th:src="${latestNews.get(1).getImageUrl()}">
+                            </a>
+                            <div class="latest-b-text">
+                                <strong th:name="title" th:text="${latestNews.get(1).getTitle()}">News Two</strong>
+                            </div>
+                            </a>
+                        </div>
+                    </li>
+                    <li class="item-c">
+                        <div class="latest-box">
+                            <a th:href="'/read/'+${latestNews.get(2).getId()}">
+                            <a class="latest-b-img" th:href="'/read/'+${latestNews.get(2).getId()}">
+                                <img th:src="${latestNews.get(2).getImageUrl()}">
+                            </a>
+                            <div class="latest-b-text">
+                                <strong th:name="title" th:text="${latestNews.get(2).getTitle()}"></strong>
+                            </div>
+                            </a>
+                        </div>
+                    </li>
+                    <li class="item-d">
+                        <div class="latest-box">
+                            <a th:href="'/read/'+${latestNews.get(3).getId()}">
+                            <a class="latest-b-img" th:href="'/read/'+${latestNews.get(3).getId()}">
+                                <img th:src="${latestNews.get(3).getImageUrl()}">
+                            </a>
+                            <div class="latest-b-text">
+                                <strong th:name="title" th:text="${latestNews.get(3).getTitle()}"></strong>
+                            </div>
+                            </a>
+                        </div>
+                    </li>
+                    <li class="item-e">
+                        <div class="latest-box">
+                            <a th:href="'/read/'+${latestNews.get(4).getId()}">
+                            <a class="latest-b-img" th:href="'/read/'+${latestNews.get(4).getId()}">
+                                <img th:src="${latestNews.get(4).getImageUrl()}">
+                            </a>
+                            <div class="latest-b-text">
+                                <strong th:name="title" th:text="${latestNews.get(4).getTitle()}"></strong>
+                            </div>
+                            </a>
+                        </div>
+                    </li>
+                    <li class="item-f">
+                        <div class="latest-box">
+                            <a th:href="'/read/'+${latestNews.get(5).getId()}">
+                            <a class="latest-b-img" th:href="'/read/'+${latestNews.get(5).getId()}">
+                                <img th:src="${latestNews.get(5).getImageUrl()}">
+                            </a>
+                            <div class="latest-b-text">
+                                <strong th:name="title" th:text="${latestNews.get(5).getTitle()}"></strong>
+                            </div>
+                            </a>
+                        </div>
+                    </li>
+                    <li class="item-g">
+                        <div class="latest-box">
+                            <a th:href="'/read/'+${latestNews.get(6).getId()}">
+                            <a class="latest-b-img" th:href="'/read/'+${latestNews.get(6).getId()}">
+                                <img th:src="${latestNews.get(6).getImageUrl()}">
+                            </a>
+                            <div class="latest-b-text">
+                                <strong th:name="title" th:text="${latestNews.get(6).getTitle()}"></strong>
+                            </div>
+                            </a>
+                        </div>
+                    </li>
+                </ul>
+            </section>
+            <div class="all-news">
+                <div class="news-heading">
+                    <h2>NEWS</h2>
+                </div>
+                <section id="news-list">
+                    <div th:each="newss: ${news}">
+                    <div class="news-box">
+                        <a th:href="'/read/'+${newss.getId()}">
+                            <a class="news-img" th:href="'/read/'+${newss.getId()}">
+                                <img th:src="${newss.getImageUrl()}">
+                            </a>
+                            <div class="news-text">
+                                <strong th:name="title" th:text="${newss.getTitle()}"></strong>
+                            </div>
+                        </a>
+                    </div>
+                    </div>
+                </section>
+                <div class="btn">
+                    <a class="more" href="/all-news">MORE</a><br>
+                </div>
+            </div>
+        </div>
+        <div th:case="'search'">
+            <div class="all-news">
+                <div class="news-heading">
+                    <h2>NEWS</h2>
+                </div>
+                <section id="news-list2">
+                    <div th:each="newss: ${news}">
+                        <div class="news-box">
+                            <a th:href="'/read/'+${newss.getId()}">
+                                <a class="news-img" th:href="'/read/'+${newss.getId()}">
+                                    <img th:src="${newss.getImageUrl()}">
+                                </a>
+                                <div class="news-text">
+                                    <strong th:name="title" th:text="${newss.getTitle()}"></strong>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+        <div th:case="'not_found'">
+        <center><p class="error">Not Found, try to search another news</p></center>
+        </div>
+    </div>
+</main>
+<footer>
+    <div class="footer-left">
+        <h3>2022</h3>
+    </div>
+    <div class="footer-right">
+        <h3>&nbsp; A16</h3>
+    </div>
+</footer>
+<script>
+    $(document).ready(function() {
+        $('#autoWidth,#autoWidth2').lightSlider({
+            autoWidth:true,
+            autoWidth2:true,
+            loop:true,
+            onSliderLoad: function() {
+                $('#autoWidth,#autoWidth2').removeClass('cS-hidden');
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

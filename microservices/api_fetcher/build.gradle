@@ -1,0 +1,57 @@
+plugins {
+    id 'org.springframework.boot' version '2.6.6'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'java'
+    id 'jacoco'
+    id 'org.sonarqube' version '3.3'
+    id 'application'
+}
+
+group = 'id.ac.ui.cs.advprog'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'com.google.code.gson:gson:2.9.0'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    compileOnly 'org.projectlombok:lombok'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation "org.powermock:powermock-module-junit4:2.0.7"
+    testImplementation "org.powermock:powermock-module-junit4-rule:2.0.7"
+    testImplementation "org.powermock:powermock-api-mockito2:2.0.7"
+    testImplementation "org.powermock:powermock-classloading-xstream:1.6.6"
+}
+
+test {
+    finalizedBy jacocoTestReport
+}
+
+jacocoTestReport {
+    dependsOn test
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+sonarqube {
+    properties {
+        property "sonar.projectKey", System.getenv("API_FETCHER_SONAR_PROJECT_KEY")
+        property "sonar.host.url", System.getenv("SONAR_URL")
+        property "sonar.login", System.getenv("API_FETCHER_SONAR_LOGIN_KEY")
+        property "sonar.qualitygate.wait", true
+    }
+}

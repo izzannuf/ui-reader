@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <link href="../static/css/reader-design.css" th:href="@{/css/reader-design.css}" rel="stylesheet" />
+    <title>UI Reader</title>
+</head>
+
+<body>
+<nav>
+    <div style="display: flex; flex-direction: row; align-items: center; gap: 5px;">
+        <div class="logo">
+            <b>
+                <h3 class="head">UI Reader
+                    <span th:if="${#request.userPrincipal.principal.firstName}">
+                    <small>   welcome, <b>[[${#request.userPrincipal.principal.firstName}]]</b></small>
+                </span>
+                </h3>
+            </b>
+        </div>
+    </div>
+
+    <div class="menu">
+        <a class="link" href="/">HOME</a>
+        <a class="link" href="/all-news">NEWS</a>
+        <a class="link" href="#">BOOKMARK</a>
+        <a class="link" th:href="@{/logout}">LOGOUT</a>
+    </div>
+</nav>
+    <div class="container">
+        <div class="icon-paragraph-sidebar-container">
+            <div class="icons-container">
+                <a href="https://twitter.com/home" target="__blank">
+                    <div class="icon-button">
+                        <img th:src="@{/images/icons/twitter-icon.png}"
+                             class="icon-image"
+                             alt="">
+                    </div>
+                </a>
+                <a href="https://twitter.com/home" target="__blank">
+                    <div class="icon-button">
+                        <img th:src="@{/images/icons/facebook-icon.png}"
+                             class="icon-image"
+                             alt="">
+                    </div>
+                </a>
+                <div class="icon-button">
+                    <img th:src="@{/images/icons/left-arrow-icon.png}"
+                         class="icon-image"
+                         alt="">
+                </div>
+                <a href="https://twitter.com/home" target="__blank">
+                    <div class="icon-button">
+                        <img th:src="@{/images/icons/gear-icon.png}"
+                             class="icon-image"
+                             alt="">
+                    </div>
+                </a>
+            </div>
+            <div class="paragraph-sidebar-container">
+                <div>
+                    <div class="tag-author-title-container">
+                        <div>
+                            <form th:action="'/api/news/' + ${newsProviderId} + '?email=' + ${userEmail}" method="post">
+                                <button th:if="${isUserSubcribed}" th:text="'Unsubcribe from ' + ${newsProviderId}" type="submit"></button>
+                                <button th:unless="${isUserSubcribed}" th:text="'Subcribe to ' + ${newsProviderId}" type="submit"></button>
+                            </form>
+                            <button type="button" id="bmBtn" onclick="myFunction()">Toggle Bookmark</button>
+                            <a th:text="${article.getSource()}" th:href="${article.getSource()}"></a><br>
+                            <b th:if="${article.getCategory()}" th:text="${article.getCategory()}"></b><br>
+                            <a th:text="${article.getPublishedDate()}"></a>
+                        </div>
+                        <div>
+                            <h1 th:text="${article.getTitle()}"></h1>
+                            <img th:src="${article.getImageUrl()}"
+                                 class="article-image"
+                                 alt="">
+                        </div>
+                    </div>
+                    <p th:text="${article.getDescription()}"></p>
+                    <p th:text="${article.getContent()}"></p>
+                    <div>
+                        <h1 style="background-color:gray;width:100%;padding:1rem;text-align:center;color:white">
+                            Reader
+                        </h1>
+                        <div id="iframe-container" style="background-image: url('https://c.tenor.com/tEBoZu1ISJ8AAAAC/spinning-loading.gif'); background-position: center; background-repeat: no-repeat;">
+                            <iframe onload="document.getElementById('iframe-container').style.removeProperty('background-image');" style="width:100%; height:100vh; background: transparent; z-index: 1000" th:src="'https://api.scraperapi.com/?api_key=db63d7d8f1ea58d521c7ce9527d756eb&amp;url=' + ${article.getSource()}"></iframe>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+<script type="text/javascript">
+      // const articleURL = window.location.hostname
+      const articleId = "[[${articleId}]]"
+      const articleName = "[[${articleTitle}]]"
+      console.log(articleId)
+
+      function myFunction() {
+          if (localStorage.getItem(articleId) != null) {
+              localStorage.removeItem(articleId)
+          }
+          else {
+              localStorage.setItem(articleId, articleName);
+          }
+      }
+
+</script>
+
+</html>
